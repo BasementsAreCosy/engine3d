@@ -1,5 +1,5 @@
 from Matrix4x4 import Matrix
-from Vector import Vector4
+from Vector4 import Vector4
 import math
 
 class Camera:

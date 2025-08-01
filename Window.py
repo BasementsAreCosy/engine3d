@@ -2,8 +2,6 @@ import cv2
 import numpy as np
 import threading
 
-from Draw import render_mesh
-
 class Window:
     def __init__(self):
         self.width, self.height = 800, 600

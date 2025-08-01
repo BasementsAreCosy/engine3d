@@ -1,5 +1,3 @@
-import Vertex
-
 class Triangle:
     def __init__(self, v0, v1, v2, colour=(255, 255, 255)):
         self.v0 = v0

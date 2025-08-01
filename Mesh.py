@@ -1,6 +1,6 @@
 from Vertex import Vertex
 from Triangle import Triangle
-from Vector import Vector4
+from Vector4 import Vector4
 from Matrix4x4 import Matrix
 from Draw import triangle_in_clip_space
 

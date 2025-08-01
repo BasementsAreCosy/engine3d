@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 
-
 def to_screen_space(vertex, width=800, height=600):
     # Convert NDC (-1..1) to screen pixels (0..width-1, 0..height-1)
     x = int((vertex.position.x + 1) * 0.5 * width)

@@ -1,5 +1,3 @@
-import Vector
-
 class Vertex:
     def __init__(self, position, normal=None, uv=None):
         self.position = position
