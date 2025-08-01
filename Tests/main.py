@@ -44,7 +44,7 @@ while environment.window.running:
     if ord('d') in keys:
         camera.position[0] -= speed
     
-    objects[0].rotate(0.022, 0.037)
+    #objects[0].rotate(0.022, 0.037)
 
     clock.tick(FPS)
     environment.update()

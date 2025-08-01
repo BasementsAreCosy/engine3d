@@ -1,4 +1,4 @@
-from Matrix4x4 import Matrix
+#from Matrix4x4 import Matrix
 import math
 import numpy as np
 from HelperFunctions import *
@@ -18,7 +18,7 @@ class Camera:
         right = normalise(cross_product(self.up, forward))
         up = cross_product(forward, right)
 
-        view = Matrix([
+        view = np.array([
             [right[0], right[1], right[2], -right.dot(self.position)],
             [up[0], up[1], up[2], -up.dot(self.position)],
             [forward[0], forward[1], forward[2], -forward.dot(self.position)],
@@ -30,7 +30,7 @@ class Camera:
     def get_projection_matrix(self):
         f = 1 / math.tan(math.radians(self.fov) / 2)
         
-        return Matrix([
+        return np.array([
             [f / self.aspect_ratio, 0, 0, 0],
             [0, f, 0, 0],
             [0, 0, (self.far + self.near) / (self.near - self.far), (2 * self.far * self.near) / (self.near - self.far)],

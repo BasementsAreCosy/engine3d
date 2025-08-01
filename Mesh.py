@@ -1,9 +1,9 @@
-from Matrix4x4 import Matrix
+#from Matrix4x4 import Matrix
 import numpy as np
 from Draw import triangle_in_clip_space_batch
 import time
 import logging
-from HelperFunctions import is_backface_batch
+from HelperFunctions import *
 
 class Mesh:
     def __init__(self, triangles, position=np.array([0, 0, 0, 1], dtype=np.float32), rotation=np.array([0, 0, 0, 0], dtype=np.float32), scale=np.array([1, 1, 1, 0], dtype=np.float32)):
@@ -33,9 +33,9 @@ class Mesh:
             ])
         verticies = np.array(verticies, dtype=np.float32)
 
-        vertices_world = verticies @ model_matrix.data.T
-        vertices_view = vertices_world @ view_matrix.data.T
-        vertices_proj = vertices_view @ proj_matrix.data.T
+        vertices_world = verticies @ model_matrix
+        vertices_view = vertices_world @ view_matrix
+        vertices_proj = vertices_view @ proj_matrix
 
         w = vertices_proj[:, 3:4]
         w_nonzero = w != 0
@@ -64,21 +64,21 @@ class Mesh:
         position, rotation (Euler angles in radians), and scale.
         """
         # Translation matrix
-        t = Matrix.translation(self.position[0], self.position[1], self.position[2])
+        t = translation(self.position[0], self.position[1], self.position[2])
         
         # Rotation matrices for each axis
-        rx = Matrix.rotation_x(self.rotation[0])
-        ry = Matrix.rotation_y(self.rotation[1])
-        rz = Matrix.rotation_z(self.rotation[2])
+        rx = rotation_x(self.rotation[0])
+        ry = rotation_y(self.rotation[1])
+        rz = rotation_z(self.rotation[2])
         
         # Combined rotation (order: Z * Y * X)
-        r = rz * ry * rx
+        r = rz @ ry @ rx
         
         # Scaling matrix
-        s = Matrix.scaling(self.scale[0], self.scale[1], self.scale[2])
+        s = scaling(self.scale[0], self.scale[1], self.scale[2])
         
         # Model matrix = Translation * Rotation * Scale
-        return t * r * s
+        return t @ r @ s
     
     def rotate(self, x=0, y=0, z=0):
         self.rotation[0] += x
