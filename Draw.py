@@ -34,7 +34,6 @@ def triangle_in_clip_space(triangle):
     return any(is_inside_clip_space(v.position) for v in [triangle.v0, triangle.v1, triangle.v2])
 
 def render_mesh(window, mesh, camera): # Local -> Model -> View -> Projection (incl persp divide) -> Viewport Transform (to screen) Rasterisation -> Framebuffer (handled by window)
-    
     view = camera.get_view_matrix()
     proj = camera.get_projection_matrix()
 

@@ -2,7 +2,7 @@ from Vertex import Vertex
 from Triangle import Triangle
 from Vector import Vector4
 from Matrix4x4 import Matrix
-from Draw import to_screen_space, triangle_in_clip_space
+from Draw import triangle_in_clip_space
 
 class Mesh:
     def __init__(self, triangles, position=Vector4(0, 0, 0, 1), rotation=Vector4(0, 0, 0, 0), scale=Vector4(1, 1, 1, 0)):
