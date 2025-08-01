@@ -1,5 +1,4 @@
 import numpy as np
-from Vector4 import Vector4
 import math
 
 class Matrix:
@@ -36,7 +35,7 @@ class Matrix:
             if result[3] != 0:
                 result[0:3] /= result[3]
                 result[3] = 1
-            return Vector4(*result)
+            return np.array([*result], dtype=np.float32)
 
         else:
             raise TypeError(f"Unsupported multiplication with {type(other)}")
@@ -45,7 +44,7 @@ class Matrix:
         if hasattr(vector, 'x') and hasattr(vector, 'y') and hasattr(vector, 'z') and hasattr(vector, 'w'):
             vec = np.array([vector.x, vector.y, vector.z, vector.w], dtype=np.float32)
             result = np.dot(self.data, vec)
-            return Vector4(*result)
+            return np.array([*result], dtype=np.float32)
         else:
             raise TypeError("Expected a vector with x, y, z, w attributes.")
 

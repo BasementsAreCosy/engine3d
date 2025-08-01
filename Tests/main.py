@@ -7,19 +7,20 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Environment import Environment
 from Camera import Camera
 from Mesh import Mesh
-from Vector4 import Vector4
 from Clock import Clock
+import numpy as np
 
 objects = []
-for i in range(11):
-    for j in range(11):
+grid_size = 1
+for i in range(grid_size):
+    for j in range(grid_size):
         objects.append(Mesh.cube())
-        objects[-1].position = Vector4((i-5)*3, (j-5)*3, 30)
+        objects[-1].position = np.array([(i-((grid_size-1)/2))*5, (j-((grid_size-1)/2))*5, 30, 1], dtype=np.float32)
 
 camera = Camera(
-    position=Vector4(0, 0, 0, 1),
-    target=Vector4(0, 0, 10000, 1),
-    up=Vector4(0, 1, 0, 1),
+    position=np.array([0, 0, 0, 1], dtype=np.float32),
+    target=np.array([0, 0, 10000, 1], dtype=np.float32),
+    up=np.array([0, 1, 0, 1], dtype=np.float32),
     fov=90,
     near=0.1,
     far=1000
@@ -35,13 +36,13 @@ while environment.window.running:
 
     speed = 0.2
     if ord('w') in keys:
-        camera.position.z += speed
+        camera.position[2] += speed
     if ord('s') in keys:
-        camera.position.z -= speed
+        camera.position[2] -= speed
     if ord('a') in keys:
-        camera.position.x += speed
+        camera.position[0] += speed
     if ord('d') in keys:
-        camera.position.x -= speed
+        camera.position[0] -= speed
     
     objects[0].rotate(0.022, 0.037)
 

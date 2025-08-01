@@ -1,9 +1,10 @@
 from Matrix4x4 import Matrix
-from Vector4 import Vector4
 import math
+import numpy as np
+from HelperFunctions import *
 
 class Camera:
-    def __init__(self, aspect_ratio=None, position=Vector4(0, 0, 0, 1), target=Vector4(0, 0, 0, 1), up=Vector4(0, 1, 0, 0), fov=90, near=0.1, far=10000):
+    def __init__(self, aspect_ratio=None, position=np.array([0, 0, 0, 1], dtype=np.float32), target=np.array([0, 0, 0, 1], dtype=np.float32), up=np.array([0, 1, 0, 0], dtype=np.float32), fov=90, near=0.1, far=10000):
         self.position = position
         self.target = target
         self.up = up
@@ -13,14 +14,14 @@ class Camera:
         self.far = far
     
     def get_view_matrix(self):
-        forward = (self.position - self.target).normalised
-        right = self.up.cross(forward).normalised
-        up = forward.cross(right)
+        forward = normalise(self.position - self.target)
+        right = normalise(cross_product(self.up, forward))
+        up = cross_product(forward, right)
 
         view = Matrix([
-            [right.x, right.y, right.z, -right.dot(self.position)],
-            [up.x, up.y, up.z, -up.dot(self.position)],
-            [forward.x, forward.y, forward.z, -forward.dot(self.position)],
+            [right[0], right[1], right[2], -right.dot(self.position)],
+            [up[0], up[1], up[2], -up.dot(self.position)],
+            [forward[0], forward[1], forward[2], -forward.dot(self.position)],
             [0, 0, 0, 1]
         ])
 

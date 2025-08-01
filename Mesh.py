@@ -1,11 +1,12 @@
-from Vertex import Vertex
-from Triangle import Triangle
-from Vector4 import Vector4
 from Matrix4x4 import Matrix
-from Draw import triangle_in_clip_space
+import numpy as np
+from Draw import triangle_in_clip_space_batch
+import time
+import logging
+from HelperFunctions import is_backface_batch
 
 class Mesh:
-    def __init__(self, triangles, position=Vector4(0, 0, 0, 1), rotation=Vector4(0, 0, 0, 0), scale=Vector4(1, 1, 1, 0)):
+    def __init__(self, triangles, position=np.array([0, 0, 0, 1], dtype=np.float32), rotation=np.array([0, 0, 0, 0], dtype=np.float32), scale=np.array([1, 1, 1, 0], dtype=np.float32)):
         self.triangles = triangles
         self.position = position
         self.rotation = rotation
@@ -14,54 +15,46 @@ class Mesh:
     def apply_transform(self, matrix):
         new_triangles = []
         for triangle in self.triangles:
-            v0 = Vertex(matrix.transform(triangle.v0.position), triangle.v0.normal, triangle.v0.uv)
-            v1 = Vertex(matrix.transform(triangle.v1.position), triangle.v1.normal, triangle.v1.uv)
-            v2 = Vertex(matrix.transform(triangle.v2.position), triangle.v2.normal, triangle.v2.uv)
-            new_triangles.append(Triangle(v0, v1, v2, triangle.colour))
+            v0 = np.array([*matrix.transform(triangle.v0)], dtype=np.float32)
+            v1 = np.array([*matrix.transform(triangle.v1)], dtype=np.float32)
+            v2 = np.array([*matrix.transform(triangle.v2)], dtype=np.float32)
+            new_triangles.append((np.array([v0, v1, v2]), np.array([255, 255, 255])))
         return new_triangles
 
     def get_transformed_triangles(self, view_matrix, proj_matrix):
         model_matrix = self.get_model_matrix()
-        transformed_tris = []
 
+        verticies = []
         for tri in self.triangles:
-            # Transform each vertex position to world space
-            v0_world = Vertex(model_matrix.transform(tri.v0.position))
-            v1_world = Vertex(model_matrix.transform(tri.v1.position))
-            v2_world = Vertex(model_matrix.transform(tri.v2.position))
+            verticies.extend([
+                tri[0],
+                tri[1],
+                tri[2]
+            ])
+        verticies = np.array(verticies, dtype=np.float32)
 
-            # Transform to view space (camera)
-            v0_view = Vertex(view_matrix.transform(v0_world.position))
-            v1_view = Vertex(view_matrix.transform(v1_world.position))
-            v2_view = Vertex(view_matrix.transform(v2_world.position))
+        vertices_world = verticies @ model_matrix.data.T
+        vertices_view = vertices_world @ view_matrix.data.T
+        vertices_proj = vertices_view @ proj_matrix.data.T
 
-            # Check if facing camera
-            if Triangle(v0_view, v1_view, v2_view).is_backface():
-                continue
+        w = vertices_proj[:, 3:4]
+        w_nonzero = w != 0
+        vertices_ndc = np.empty_like(vertices_proj)
+        vertices_ndc[w_nonzero[:, 0]] = vertices_proj[w_nonzero[:, 0]] / w[w_nonzero].reshape(-1, 1)
+        vertices_ndc[~w_nonzero[:, 0]] = vertices_proj[~w_nonzero[:, 0]]
 
-            # Project to 2D screen space
-            v0_proj = Vertex(proj_matrix.transform(v0_view.position))
-            v1_proj = Vertex(proj_matrix.transform(v1_view.position))
-            v2_proj = Vertex(proj_matrix.transform(v2_view.position))
+        num_tris = len(self.triangles)
+        verts = vertices_ndc.reshape((num_tris, 3, 4))
 
-            # Perform perspective divide (if your transform method doesn't do it)
-            v0_ndc = Vertex(v0_proj.position.perspective_divide())
-            v1_ndc = Vertex(v1_proj.position.perspective_divide())
-            v2_ndc = Vertex(v2_proj.position.perspective_divide())
+        mask_backface = is_backface_batch(verts)
+        mask_clip = triangle_in_clip_space_batch(verts)
 
-            # Check if in clip space
-            if not triangle_in_clip_space(Triangle(v0_ndc, v1_ndc, v2_ndc)):
-                continue
+        visible_mask = mask_backface & mask_clip
 
-            # Create new vertices (ignoring normals and uv for now)
-            new_v0 = v0_ndc
-            new_v1 = v1_ndc
-            new_v2 = v2_ndc
+        visible_verts = verts[visible_mask]
+        colours = np.full((len(visible_verts), 3), 255, dtype=np.uint8)
+        transformed_tris = list(zip(visible_verts, colours))
 
-            # Keep color if present
-            color = getattr(tri, 'color', (255, 255, 255))
-
-            transformed_tris.append(Triangle(new_v0, new_v1, new_v2, color))
 
         return transformed_tris
     
@@ -71,43 +64,45 @@ class Mesh:
         position, rotation (Euler angles in radians), and scale.
         """
         # Translation matrix
-        t = Matrix.translation(self.position.x, self.position.y, self.position.z)
+        t = Matrix.translation(self.position[0], self.position[1], self.position[2])
         
         # Rotation matrices for each axis
-        rx = Matrix.rotation_x(self.rotation.x)
-        ry = Matrix.rotation_y(self.rotation.y)
-        rz = Matrix.rotation_z(self.rotation.z)
+        rx = Matrix.rotation_x(self.rotation[0])
+        ry = Matrix.rotation_y(self.rotation[1])
+        rz = Matrix.rotation_z(self.rotation[2])
         
         # Combined rotation (order: Z * Y * X)
         r = rz * ry * rx
         
         # Scaling matrix
-        s = Matrix.scaling(self.scale.x, self.scale.y, self.scale.z)
+        s = Matrix.scaling(self.scale[0], self.scale[1], self.scale[2])
         
         # Model matrix = Translation * Rotation * Scale
         return t * r * s
     
     def rotate(self, x=0, y=0, z=0):
-        self.rotation.x += x
-        self.rotation.y += y
-        self.rotation.z += z
+        self.rotation[0] += x
+        self.rotation[1] += y
+        self.rotation[2] += z
     
     def set_rotation(self, x=0, y=0, z=0):
-        if isinstance(x, Vector4):
+        if isinstance(x, np.array):
             self.rotation = x
         else:
-            self.rotation = Vector4(x, y, z, 0)
+            self.rotation = np.array([x, y, z, 0], dtype=np.float32)
 
     @staticmethod
     def cube():
-        verts = [
-            # Front
-            Vertex(Vector4(-1, -1,  1, 1)), Vertex(Vector4( 1, -1,  1, 1)), Vertex(Vector4( 1,  1,  1, 1)),
-            Vertex(Vector4(-1,  1,  1, 1)),
-            # Back
-            Vertex(Vector4(-1, -1, -1, 1)), Vertex(Vector4( 1, -1, -1, 1)), Vertex(Vector4( 1,  1, -1, 1)),
-            Vertex(Vector4(-1,  1, -1, 1)),
-        ]
+        verts = np.array([
+            [-1, -1,  1, 1],  # Front face vertices
+            [ 1, -1,  1, 1],
+            [ 1,  1,  1, 1],
+            [-1,  1,  1, 1],
+            [-1, -1, -1, 1],  # Back face vertices
+            [ 1, -1, -1, 1],
+            [ 1,  1, -1, 1],
+            [-1,  1, -1, 1],
+        ], dtype=np.float32)
 
         idx = [
             (0, 1, 2), (0, 2, 3),  # Front
@@ -118,5 +113,5 @@ class Mesh:
             (4, 5, 1), (4, 1, 0),  # Bottom
         ]
 
-        tris = [Triangle(verts[i], verts[j], verts[k]) for i, j, k in idx]
+        tris = [np.array([verts[i], verts[j], verts[k]]) for i, j, k in idx]
         return Mesh(tris)
