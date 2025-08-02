@@ -20,7 +20,7 @@ for i in range(grid_size):
 camera = Camera(
     position=np.array([0, 0, 0, 1], dtype=np.float32),
     target=np.array([0, 0, 10000, 1], dtype=np.float32),
-    up=np.array([0, 1, 0, 1], dtype=np.float32),
+    up=np.array([0, 1, 0, 0], dtype=np.float32),
     fov=90,
     near=0.1,
     far=1000
