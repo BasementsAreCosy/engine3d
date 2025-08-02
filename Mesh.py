@@ -8,7 +8,7 @@ from HelperFunctions import *
 # todo: reshape ALL vectors to .reshape(4, 1) and swap @ left multiply instead in get_transformed_triangles
 
 class Mesh:
-    def __init__(self, triangles, position=np.array([0, 0, 0, 1], dtype=np.float32), rotation=np.array([0, 0, 0, 0], dtype=np.float32), scale=np.array([1, 1, 1, 0], dtype=np.float32)):
+    def __init__(self, triangles, position=vector4(0, 0, 0, 1), rotation=vector4(0, 0, 0, 0), scale=vector4(1, 1, 1, 0)):
         self.triangles = triangles
         self.position = position
         self.rotation = rotation
@@ -82,7 +82,7 @@ class Mesh:
         if isinstance(x, np.array):
             self.rotation = x
         else:
-            self.rotation = np.array([x, y, z, 0], dtype=np.float32)
+            self.rotation = vector4(x, y, z, 0)
 
     @staticmethod
     def cube():

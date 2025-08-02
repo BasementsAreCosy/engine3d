@@ -4,7 +4,7 @@ import numpy as np
 from HelperFunctions import *
 
 class Camera:
-    def __init__(self, aspect_ratio=None, position=np.array([0, 0, 0, 1], dtype=np.float32), target=np.array([0, 0, 0, 1], dtype=np.float32), up=np.array([0, 1, 0, 0], dtype=np.float32), fov=90, near=0.1, far=10000):
+    def __init__(self, aspect_ratio=None, position=vector4(0, 0, 0, 1), target=vector4(0, 0, 0, 1), up=vector4(0, 1, 0, 0), fov=90, near=0.1, far=10000):
         self.position = position
         self.target = target
         self.up = up

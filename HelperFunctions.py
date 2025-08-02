@@ -8,17 +8,17 @@ def normalise(vec):
     else:
         normalised_xyz = vec[:3]
     
-    return np.array([*normalised_xyz, vec[3]], dtype=np.float32)
+    return vector4(*normalised_xyz, vec[3])
 
 def cross_product(a, b):
     # Compute cross product of xyz parts
-    cross_xyz = np.cross(a[:3], b[:3])
+    cross_xyz = np.cross(a[:3].flatten(), b[:3].flatten())
     
     # Extract w from a
-    w = a[3]
+    w = a[3][0]
     
     # Concatenate cross product xyz with original w
-    return np.array([*cross_xyz, w], dtype=np.float32)
+    return vector4(*cross_xyz, w)
 
 def is_backface(tri):
     return normalise(cross_product(tri[1]-tri[0], tri[2]-tri[0])).dot(tri[0]) >= 0
@@ -84,3 +84,6 @@ def rotation_z(theta):
     mat[1, 0] = sin_t
     mat[1, 1] = cos_t
     return mat
+
+def vector4(x, y, z, w):
+    return np.array([x, y, z, w], dtype=np.float32).reshape(4, 1)
