@@ -8,8 +8,14 @@ from HelperFunctions import *
 # todo: reshape ALL vectors to .reshape(4, 1) and swap @ left multiply instead in get_transformed_triangles
 
 class Mesh:
-    def __init__(self, triangles, position=np.array([0, 0, 0, 1], dtype=np.float32), rotation=np.array([0, 0, 0, 0], dtype=np.float32), scale=np.array([1, 1, 1, 0], dtype=np.float32)):
+    def __init__(self, triangles, position=None, rotation=None, scale=None):
         self.triangles = triangles
+        if position is None:
+            position = np.array([0, 0, 0, 1], dtype=np.float32)
+        if rotation is None:
+            rotation = np.array([0, 0, 0, 0], dtype=np.float32)
+        if scale is None:
+            scale = np.array([1, 1, 1, 0], dtype=np.float32)
         self.position = position
         self.rotation = rotation
         self.scale = scale
@@ -17,14 +23,7 @@ class Mesh:
     def get_transformed_triangles(self, view_matrix, proj_matrix):
         model_matrix = self.get_model_matrix()
 
-        verticies = []
-        for tri in self.triangles:
-            verticies.extend([
-                tri[0],
-                tri[1],
-                tri[2]
-            ])
-        verticies = np.array(verticies, dtype=np.float32)
+        verticies = self.triangles.reshape(-1, 4).astype(np.float32)
 
         vertices_world = verticies @ model_matrix
         vertices_view = vertices_world @ view_matrix
@@ -71,7 +70,7 @@ class Mesh:
         s = scaling(self.scale[0], self.scale[1], self.scale[2])
         
         # Model matrix = Translation * Rotation * Scale
-        return t @ r @ s
+        return (t @ r @ s).T
     
     def rotate(self, x=0, y=0, z=0):
         self.rotation[0] += x
@@ -107,4 +106,23 @@ class Mesh:
         ]
 
         tris = [np.array([verts[i], verts[j], verts[k]]) for i, j, k in idx]
-        return Mesh(tris)
+        return Mesh(np.array(tris, dtype=np.float32))
+
+    @staticmethod
+    def tetrahedron():
+        verts = np.array([
+            [1, 1, 1, 1],
+            [-1, -1, 1, 1],
+            [-1, 1, -1, 1],
+            [1, -1, -1, 1]
+        ], dtype=np.float32)
+
+        idx = [
+            (0, 2, 1),  # Face ABC (from A to C to B)
+            (0, 1, 3),  # Face ABD
+            (0, 3, 2),  # Face ACD
+            (1, 2, 3),  # Face BCD
+        ]
+
+        tris = [np.array([verts[i], verts[j], verts[k]]) for i, j, k in idx]
+        return Mesh(np.array(tris, dtype=np.float32))

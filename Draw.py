@@ -47,20 +47,10 @@ def triangle_in_clip_space_batch(tris):
     return np.all(in_bounds, axis=(1, 2))
 
 def render_mesh(window, mesh, camera): # Local -> Model -> View -> Projection (incl persp divide) -> Viewport Transform (to screen) Rasterisation -> Framebuffer (handled by window)
-    start = time.perf_counter()
     view = camera.get_view_matrix()
     proj = camera.get_projection_matrix()
-    end = time.perf_counter()
-    logging.info(f'Get matrix: {end-start:.8f}')
-
-    start = time.perf_counter()
     tris = mesh.get_transformed_triangles(view, proj)
-    end = time.perf_counter()
-    logging.info(f'Transform triangle: {end-start:.8f}')
 
-    start = time.perf_counter()
     for tri in tris:
         draw_triangle_filled(window, tri[0])
         draw_triangle_wireframe(window, tri[0])
-    end = time.perf_counter()
-    logging.info(f'Draw: {end-start:.8f}')

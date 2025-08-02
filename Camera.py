@@ -25,7 +25,7 @@ class Camera:
             [0, 0, 0, 1]
         ])
 
-        return view
+        return view.T
 
     def get_projection_matrix(self):
         f = 1 / math.tan(math.radians(self.fov) / 2)
@@ -35,4 +35,4 @@ class Camera:
             [0, f, 0, 0],
             [0, 0, (self.far + self.near) / (self.near - self.far), (2 * self.far * self.near) / (self.near - self.far)],
             [0, 0, -1, 0]
-        ])
+        ]).T
