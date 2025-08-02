@@ -12,16 +12,14 @@ from Mesh import Mesh
 from Vector import Vector4
 from Clock import Clock
 
-objects = []
-for i in range(11):
-    for j in range(11):
-        objects.append(Mesh.cube())
-        objects[-1].position = Vector4((i-5)*3, (j-5)*3, 30)
+
+objects = [Mesh.cube()]
+objects[0].position = Vector4(0, 0, 30)
 
 camera = Camera(
     position=Vector4(0, 0, 0, 1),
     target=Vector4(0, 0, 10000, 1),
-    up=Vector4(0, 1, 0, 1),
+    up=Vector4(0, 1, 0, 0),
     fov=90,
     near=0.1,
     far=1000
