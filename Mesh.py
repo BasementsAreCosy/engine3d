@@ -5,21 +5,14 @@ import time
 import logging
 from HelperFunctions import *
 
+# todo: reshape ALL vectors to .reshape(4, 1) and swap @ left multiply instead in get_transformed_triangles
+
 class Mesh:
     def __init__(self, triangles, position=np.array([0, 0, 0, 1], dtype=np.float32), rotation=np.array([0, 0, 0, 0], dtype=np.float32), scale=np.array([1, 1, 1, 0], dtype=np.float32)):
         self.triangles = triangles
         self.position = position
         self.rotation = rotation
         self.scale = scale
-    
-    def apply_transform(self, matrix):
-        new_triangles = []
-        for triangle in self.triangles:
-            v0 = np.array([*matrix.transform(triangle.v0)], dtype=np.float32)
-            v1 = np.array([*matrix.transform(triangle.v1)], dtype=np.float32)
-            v2 = np.array([*matrix.transform(triangle.v2)], dtype=np.float32)
-            new_triangles.append((np.array([v0, v1, v2]), np.array([255, 255, 255])))
-        return new_triangles
 
     def get_transformed_triangles(self, view_matrix, proj_matrix):
         model_matrix = self.get_model_matrix()
