@@ -44,7 +44,7 @@ def triangle_in_clip_space_batch(tris):
     in_bounds = np.logical_and(xyz >= -w, xyz <= w)  # shape: (N, 3, 3)
 
     # All coordinates of all 3 vertices must be within bounds
-    return np.all(in_bounds, axis=(1, 2))
+    return np.any(np.all(in_bounds, axis=2), axis=(1))
 
 def render_mesh(window, mesh, camera): # Local -> Model -> View -> Projection (incl persp divide) -> Viewport Transform (to screen) Rasterisation -> Framebuffer (handled by window)
     view = camera.get_view_matrix()

@@ -5,8 +5,6 @@ import time
 import logging
 from HelperFunctions import *
 
-# todo: reshape ALL vectors to .reshape(4, 1) and swap @ left multiply instead in get_transformed_triangles
-
 class Mesh:
     def __init__(self, triangles, position=None, rotation=None, scale=None):
         self.triangles = triangles
