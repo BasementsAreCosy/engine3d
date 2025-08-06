@@ -8,18 +8,18 @@ from . import primitives
 from . import camera
 
 class Window:
-    def __init__(self):
-        self.camera = camera.Camera()
-
+    def __init__(self, width=800, height=600):
         self.meshes = []
         self.transformed_meshes = []
         self.translations = []
         self.rotations = []
         self.scalings = []
         
-        self.width, self.height = 800, 600
+        self.width, self.height = width, height
         self.frontbuffer = np.zeros((self.height, self.width, 3), dtype=np.uint8)
         self.backbuffer = np.zeros_like(self.frontbuffer)
+
+        self.camera = camera.Camera(aspect_ratio=self.height/self.width)
 
         self.pressed_keys = set()
         self.running = True

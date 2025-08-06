@@ -1,7 +1,7 @@
 from engine3d import Window, cube_mesh, Clock
 
 clock = Clock()
-window = Window()
+window = Window(800, 600)
 '''
 grid_size = 1
 for i in range(grid_size):
