@@ -45,5 +45,5 @@ def rotation_matrix_z(theta):
     mat[1, 1] = cos_t
     return mat
 
-def combined_rotation(x_alpha, y_beta, z_gamma):
-    return rotation_matrix_z(z_gamma) @ rotation_matrix_y(y_beta) @ rotation_matrix_x(x_alpha)
+def combined_rotation_matrix(rx, ry, rz):
+    return rotation_matrix_z(rz) @ rotation_matrix_y(ry) @ rotation_matrix_x(rx)
