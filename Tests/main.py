@@ -11,16 +11,17 @@ from Clock import Clock
 import numpy as np
 
 objects = []
-#for i in range(11):
-#    for j in range(11):
-#        objects.append(Mesh.cube())
-#        objects[-1].position = np.array([(i-5)*5, (j-5)*5, 30], dtype=np.float32)
-objects.append(Mesh.cube())
+for i in range(11):
+    for j in range(11):
+        objects.append(Mesh.cube())
+        objects[-1].position = np.array([(i-5)*5, (j-5)*5, 30], dtype=np.float32)
+#objects.append(Mesh.cube())
+#objects[-1].position = np.array([0, 0, 10], dtype=np.float32)
 #objects.append(Mesh.tetrahedron())
 #objects[-1].position = np.array([5, 0, 0, 1], dtype=np.float32)
 
 camera = Camera(
-    position=np.array([0, 0, -10, 1], dtype=np.float32),
+    position=np.array([0, 0, 0, 1], dtype=np.float32),
     target=np.array([0, 0, 10000, 1], dtype=np.float32),
     up=np.array([0, 1, 0, 0], dtype=np.float32),
     fov=90,
@@ -46,7 +47,8 @@ while environment.window.running:
     if ord('d') in keys:
         camera.position[0] -= speed
     
-    #objects[0].rotate(0.022, 0.037)
+    for object in objects:
+        object.rotate(0.05/1.23, 0.05, 0.05/5.32)
 
     clock.tick(FPS)
     environment.update()
