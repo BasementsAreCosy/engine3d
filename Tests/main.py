@@ -1,8 +1,6 @@
-from engine3d import Window, cube
-import Clock
+from engine3d import Window, cube, Clock
 
-clock = Clock.Clock()
-
+clock = Clock()
 window = Window()
 
 grid_size = 11

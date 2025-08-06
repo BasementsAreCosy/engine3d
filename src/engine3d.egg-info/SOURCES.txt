@@ -1,0 +1,13 @@
+pyproject.toml
+src/engine3d/Clock.py
+src/engine3d/__init__.py
+src/engine3d/camera.py
+src/engine3d/engine.py
+src/engine3d/maths_utils.py
+src/engine3d/primitives.py
+src/engine3d/renderer.py
+src/engine3d/transforms.py
+src/engine3d.egg-info/PKG-INFO
+src/engine3d.egg-info/SOURCES.txt
+src/engine3d.egg-info/dependency_links.txt
+src/engine3d.egg-info/top_level.txt

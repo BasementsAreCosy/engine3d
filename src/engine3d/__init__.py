@@ -2,6 +2,7 @@
 
 from .engine import Window
 from .primitives import cube_mesh
+from .Clock import Clock
 # Add other top-level exports as needed
 
-__all__ = ['Window', 'cube_mesh']
+__all__ = ['Window', 'cube_mesh', 'Clock']

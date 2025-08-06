@@ -1,0 +1,13 @@
+[project]
+name = "engine3d"
+version = "0.1.0"
+description = "A library to render 3D objects."
+authors = [{ name = "Fin Jones", email = "finley@finleyjones.co.uk" }]
+dependencies = []
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
