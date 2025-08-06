@@ -2,8 +2,21 @@ import cv2
 import numpy as np
 import threading
 
+import renderer
+import transforms
+import primitives
+import camera
+
 class Window:
     def __init__(self):
+        self.camera = camera.Camera()
+
+        self.meshes = []
+        self.transformed_meshes = []
+        self.translations = []
+        self.rotations = []
+        self.scalings = []
+        
         self.width, self.height = 800, 600
         self.frontbuffer = np.zeros((self.height, self.width, 3), dtype=np.uint8)
         self.backbuffer = np.zeros_like(self.frontbuffer)
@@ -46,7 +59,26 @@ class Window:
         cv2.destroyAllWindows()
     
     def update(self):
+        self.transformed_meshes[:] = [v @ (t @ r @ s).T for v, t, r, s in zip(self.meshes, self.translations, self.rotations, self.scalings)]
+
+        renderer.render(self, np.concatenate(self.transformed_meshes, axis=0))
+
         self.pressed_keys.clear()
     
         self.swap_buffers()
         self.clear()
+
+    def add_mesh(self, mesh: np.ndarray=primitives.cube_mesh(), translation: tuple=(0, 0, 0), rotation: tuple=(0, 0, 0), scale: tuple=(1, 1, 1)):
+        self.meshes.append(mesh)
+        self.translations.append(np.array(transforms.translation_matrix(*translation)))
+        self.rotations.append(np.array(transforms.combined_rotation(*rotation), dtype=np.float32))
+        self.scalings.append(np.array(transforms.scaling_matrix(*scale), dtype=np.float32))
+    
+    def translate_object(self, name, idx):
+        pass
+    
+    def rotate_object(self, name, idx):
+        pass
+    
+    def scale_object(self, name, idx):
+        pass

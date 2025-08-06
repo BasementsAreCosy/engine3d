@@ -1,52 +1,22 @@
-import sys
-import os
+from engine3d import Window, cube
+import Clock
 
-# Add the parent directory (engine3d/) to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+clock = Clock.Clock()
 
-from Environment import Environment
-from Camera import Camera
-from Mesh import Mesh
-from Clock import Clock
-import numpy as np
+window = Window()
 
-objects = []
-#for i in range(11):
-#    for j in range(11):
-#        objects.append(Mesh.cube())
-#        objects[-1].position = np.array([(i-5)*5, (j-5)*5, 30], dtype=np.float32)
-objects.append(Mesh.cube())
-#objects.append(Mesh.tetrahedron())
-#objects[-1].position = np.array([5, 0, 0, 1], dtype=np.float32)
+grid_size = 11
+for i in range(grid_size):
+    for j in range(grid_size):
+        window.add_mesh(cube(), (((i-(grid_size//2))*5), ((j-(grid_size//2))*5), 30))
 
-camera = Camera(
-    position=np.array([0, 0, -10, 1], dtype=np.float32),
-    target=np.array([0, 0, 10000, 1], dtype=np.float32),
-    up=np.array([0, 1, 0, 0], dtype=np.float32),
-    fov=90,
-    near=0.1,
-    far=1000
-)
-
-environment = Environment(camera, objects)
-clock = Clock()
-FPS = 60
-
-while environment.window.running:
-
-    keys = environment.window.get_pressed_keys()
-
-    speed = 0.2
-    if ord('w') in keys:
-        camera.position[2] += speed
-    if ord('s') in keys:
-        camera.position[2] -= speed
-    if ord('a') in keys:
-        camera.position[0] += speed
-    if ord('d') in keys:
-        camera.position[0] -= speed
+angle = 0.07
+while True:
+    window.update()
     
-    #objects[0].rotate(0.022, 0.037)
+    #for i in range(len(window.rotations)):
+    #    window.rotations[i] = window.rotation_all(angle/1.23, angle, angle/5.32)
 
-    clock.tick(FPS)
-    environment.update()
+    angle += 0.05
+
+    clock.tick(60)
