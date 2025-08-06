@@ -5,11 +5,11 @@ import numpy as np
 def render(window, tris: np.ndarray):
     view_matrix = window.camera.get_view_matrix()
     proj_matrix = window.camera.get_projection_matrix()
-    transformed_tris = transform_triangles(tris, view_matrix, proj_matrix)
+    transformed_tris = transform_triangles(tris, view_matrix, proj_matrix, window.width, window.height)
     cv2.fillPoly(window.backbuffer, transformed_tris, color=(255, 255, 255))
     cv2.polylines(window.backbuffer, transformed_tris, isClosed=True, color=(255, 0, 0))
 
-def transform_triangles(tris: np.ndarray, view_matrix: np.ndarray, projection_matrix: np.ndarray) -> np.ndarray:
+def transform_triangles(tris: np.ndarray, view_matrix: np.ndarray, projection_matrix: np.ndarray, width, height) -> np.ndarray:
     vertices = tris.reshape(-1, 4).astype(np.float32)
 
     vertices_view = vertices @ view_matrix
@@ -32,7 +32,7 @@ def transform_triangles(tris: np.ndarray, view_matrix: np.ndarray, projection_ma
     visible_verts = verts[visible_mask]
     #colours = np.full((len(visible_verts), 3), 255, dtype=np.uint8)
 
-    screen_verts = to_screen_space(visible_verts)
+    screen_verts = to_screen_space(visible_verts, width, height)
 
     return screen_verts
 

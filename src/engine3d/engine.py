@@ -19,7 +19,7 @@ class Window:
         self.frontbuffer = np.zeros((self.height, self.width, 3), dtype=np.uint8)
         self.backbuffer = np.zeros_like(self.frontbuffer)
 
-        self.camera = camera.Camera(aspect_ratio=self.height/self.width)
+        self.camera = camera.Camera(aspect_ratio=self.width/self.height)
 
         self.pressed_keys = set()
         self.running = True
