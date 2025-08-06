@@ -1,7 +1,7 @@
 import math
 import numpy as np
 
-import maths_utils
+from . import maths_utils
 
 class Camera:
     def __init__(self, aspect_ratio=None, position=None, target=None, up=None, fov=None, near=None, far=None):
@@ -10,7 +10,7 @@ class Camera:
         if position is None:
             position = np.array([0, 0, 0, 1], dtype=np.float32)
         if target is None:
-            target = np.array([0, 0, 0, 1], dtype=np.float32)
+            target = np.array([0, 0, 5, 1], dtype=np.float32)
         if up is None:
             up = np.array([0, 1, 0, 0], dtype=np.float32)
         if fov is None:

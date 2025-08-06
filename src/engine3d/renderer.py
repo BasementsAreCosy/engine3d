@@ -4,7 +4,7 @@ import numpy as np
 
 def render(window, tris: np.ndarray):
     view_matrix = window.camera.get_view_matrix()
-    proj_matrix = window.camera.get_proj_matrix()
+    proj_matrix = window.camera.get_projection_matrix()
     transformed_tris = transform_triangles(tris, view_matrix, proj_matrix)
     cv2.fillPoly(window.backbuffer, transformed_tris, color=(255, 255, 255))
     cv2.polylines(window.backbuffer, transformed_tris, isClosed=True, color=(255, 0, 0))

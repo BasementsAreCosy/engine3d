@@ -2,10 +2,10 @@ import cv2
 import numpy as np
 import threading
 
-import renderer
-import transforms
-import primitives
-import camera
+from . import renderer
+from . import transforms
+from . import primitives
+from . import camera
 
 class Window:
     def __init__(self):
