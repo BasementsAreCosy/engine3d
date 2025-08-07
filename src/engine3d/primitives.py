@@ -23,3 +23,22 @@ def cube_mesh():
 
     tris = [np.array([verts[i], verts[j], verts[k]]) for i, j, k in idx]
     return np.array(tris, dtype=np.float32)
+
+
+def tetrahedron_mesh():
+    verts = np.array([
+        [1, 1, 1, 1],
+        [-1, -1, 1, 1],
+        [-1, 1, -1, 1],
+        [1, -1, -1, 1]
+    ], dtype=np.float32)
+
+    idx = [
+        (0, 2, 1),  # Face ABC (from A to C to B)
+        (0, 1, 3),  # Face ABD
+        (0, 3, 2),  # Face ACD
+        (1, 2, 3),  # Face BCD
+    ]
+
+    tris = [np.array([verts[i], verts[j], verts[k]]) for i, j, k in idx]
+    return np.array(tris, dtype=np.float32)

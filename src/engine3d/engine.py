@@ -25,10 +25,13 @@ class Window:
 
         self.camera = camera.Camera(aspect_ratio=self.width/self.height)
 
+        self.mouse_pos = (0, 0)
+        self.mouse_down = [False, False, False] # left, middle, right
         self.pressed_keys = set()
         self.running = True
 
         self.lock = threading.Lock()
+        
         self.display_thread = threading.Thread(target=self.display_loop)
         self.display_thread.start()
 
@@ -40,13 +43,16 @@ class Window:
             self.backbuffer[y, x] = colour
     
     def get_pressed_keys(self):
-        return self.pressed_keys
+        with self.lock:
+            return self.pressed_keys
     
     def swap_buffers(self):
         with self.lock:
             self.frontbuffer[:, :] = self.backbuffer
     
     def display_loop(self):
+        cv2.namedWindow('3D Engine Framebuffer')
+        cv2.setMouseCallback('3D Engine Framebuffer', self.mouse_callback)
         while self.running:
             with self.lock:
                 frame = self.frontbuffer.copy()
@@ -61,6 +67,25 @@ class Window:
                 self.pressed_keys.add(key)
 
         cv2.destroyAllWindows()
+    
+    def mouse_callback(self, event, x, y, flags, param):
+        if event == cv2.EVENT_MOUSEMOVE:
+            self.mouse_pos = (x, y)
+
+        elif event == cv2.EVENT_LBUTTONDOWN:
+            self.mouse_down[0] = True
+        elif event == cv2.EVENT_LBUTTONUP:
+            self.mouse_down[0] = False
+        
+        elif event == cv2.EVENT_MBUTTONDOWN:
+            self.mouse_down[1] = True
+        elif event == cv2.EVENT_MBUTTONUP:
+            self.mouse_down[1] = False
+        
+        elif event == cv2.EVENT_RBUTTONDOWN:
+            self.mouse_down[2] = True
+        elif event == cv2.EVENT_RBUTTONUP:
+            self.mouse_down[2] = False
     
     def update(self):
         self.transformed_meshes[:] = [v @ (t @ r @ s).T for v, t, r, s in zip(self.meshes, self.translation_matrices, self.rotation_matrices, self.scaling_matrices)]
